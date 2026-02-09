@@ -42,7 +42,7 @@ class IslandOverlayService : AccessibilityService(), PluginHost {
 		MATCH_PARENT,
 		WRAP_CONTENT,
 		TYPE_ACCESSIBILITY_OVERLAY,
-		FLAG_LAYOUT_IN_SCREEN or FLAG_LAYOUT_NO_LIMITS or FLAG_NOT_TOUCH_MODAL or FLAG_NOT_FOCUSABLE,
+		FLAG_LAYOUT_IN_SCREEN or FLAG_LAYOUT_NO_LIMITS or FLAG_NOT_FOCUSABLE or FLAG_WATCH_OUTSIDE_TOUCH,
 		PixelFormat.TRANSLUCENT
 	).apply {
 		gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
@@ -146,13 +146,20 @@ class IslandOverlayService : AccessibilityService(), PluginHost {
 			)
 		}
 
-		// TODO: Find a way to detect when a click is performed outside of the overlay (to close it)
-		/*composeView.setOnTouchListener { view: View?, event: MotionEvent ->
-			if (event.action == MotionEvent.ACTION_DOWN) {
-				Log.d("OverlayService", "Touch event")
+		// Handle clicks outside the overlay to close/shrink it
+		composeView.setOnTouchListener { view: View?, event: MotionEvent ->
+			if (event.action == MotionEvent.ACTION_OUTSIDE) {
+				// Click is outside the overlay bounds, shrink/close the island
+				if (islandState is IslandViewState.Expanded) {
+					shrink()
+				} else if (islandState is IslandViewState.Opened) {
+					// Dismiss the active plugin
+					pluginManager.requestDismiss(pluginManager.activePlugins.firstOrNull() ?: return@setOnTouchListener false)
+				}
+				Log.d("OverlayService", "Click outside overlay detected")
 			}
 			false
-		}*/
+		}
 
 		// Trick The ComposeView into thinking we are tracking lifecycle
 		/*val viewModelStore = ViewModelStore()
