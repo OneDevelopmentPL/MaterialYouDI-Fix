@@ -5,7 +5,7 @@ There was an error, when you had dynamic island on, you cannot swipe to notifica
 
 # TO GET INFO ABOUT THIS PROJECT VISIT 
 ```markdown
-original_README.ms
+original_README.md
 ```
 
 All copyrights (c) goes to Angel Studio
