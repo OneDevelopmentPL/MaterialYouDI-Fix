@@ -110,7 +110,7 @@ fun PositionSizeSettingsScreen() {
 				title = "Position Y",
 				extension = ".dp",
 				value = IslandSettings.instance.positionY.toFloat(),
-				range = 0f..50f
+				range = -50f..50f
 			)
 		}
 		item {

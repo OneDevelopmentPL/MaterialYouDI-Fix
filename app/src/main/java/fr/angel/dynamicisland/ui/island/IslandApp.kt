@@ -34,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import fr.angel.dynamicisland.island.Island
@@ -119,7 +120,12 @@ fun IslandApp(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .pointerInput(Unit) {
+                            // This modifier allows touch events to pass through to the background
+                            // The island will handle its own touches via combinedClickable
+                        },
                     contentAlignment = when (IslandSettings.instance.gravity) {
                         IslandGravity.Center -> Alignment.TopCenter
                         IslandGravity.Left -> Alignment.TopStart

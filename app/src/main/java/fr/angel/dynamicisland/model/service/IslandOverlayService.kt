@@ -26,6 +26,7 @@ import fr.angel.dynamicisland.R
 import fr.angel.dynamicisland.island.Island
 import fr.angel.dynamicisland.island.IslandState
 import fr.angel.dynamicisland.island.IslandViewState
+import fr.angel.dynamicisland.island.IslandSettings
 import fr.angel.dynamicisland.model.*
 import fr.angel.dynamicisland.plugins.BasePlugin
 import fr.angel.dynamicisland.plugins.ExportedPlugins
@@ -39,11 +40,11 @@ import kotlinx.coroutines.launch
 class IslandOverlayService : AccessibilityService(), PluginHost {
 
 	private val params = WindowManager.LayoutParams(
-		MATCH_PARENT,
 		WRAP_CONTENT,
-		TYPE_ACCESSIBILITY_OVERLAY,
-		FLAG_LAYOUT_IN_SCREEN or FLAG_LAYOUT_NO_LIMITS or FLAG_NOT_FOCUSABLE or FLAG_WATCH_OUTSIDE_TOUCH,
-		PixelFormat.TRANSLUCENT
+		WRAP_CONTENT,
+		TYPE_APPLICATION_OVERLAY,
+		FLAG_LAYOUT_IN_SCREEN or FLAG_LAYOUT_NO_LIMITS or FLAG_NOT_FOCUSABLE or FLAG_NOT_TOUCH_MODAL,
+		PixelFormat.TRANSPARENT
 	).apply {
 		gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
 	}
@@ -110,6 +111,13 @@ class IslandOverlayService : AccessibilityService(), PluginHost {
 		init()
 
 		val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+		try {
+			// Apply user offset (positionY is in dp). Use absolute offset so island can reach very top.
+			val userOffsetPx = (IslandSettings.instance.positionY * resources.displayMetrics.density).toInt()
+			params.y = userOffsetPx
+		} catch (e: Exception) {
+			Log.w("OverlayService", "Failed to compute user offset: ${e.message}")
+		}
 		showOverlay(windowManager, params)
 	}
 
